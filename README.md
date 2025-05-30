@@ -1,4 +1,6 @@
-# eslint-plugin-internal
+# eslint-plugin-go-internal
+
+[![NPM version](https://img.shields.io/npm/v/eslint-plugin-go-internal.svg?style=flat-square)](https://www.npmjs.com/package/eslint-plugin-go-internal)
 
 An ESLint plugin that enforces Go-style internal/ import boundaries to maintain clean module architecture.
 
@@ -9,16 +11,16 @@ This plugin implements the Go programming language's "internal" package conventi
 ## Installation
 
 ```bash
-npm install --save-dev eslint-plugin-internal
+npm install --save-dev eslint-plugin-go-internal
 ```
 
 ## Usage
 
-Add `internal` to the plugins section of your `.eslintrc` configuration file:
+Add `go-internal` to the plugins section of your `.eslintrc` configuration file:
 
 ```json
 {
-  "plugins": ["internal"]
+  "plugins": ["go-internal"]
 }
 ```
 
@@ -27,7 +29,7 @@ Then configure the rule under the rules section:
 ```json
 {
   "rules": {
-    "internal/no-cross-internal-imports": "error"
+    "go-internal/no-cross-internal-imports": "error"
   }
 }
 ```
@@ -36,7 +38,7 @@ Or use the recommended configuration:
 
 ```json
 {
-  "extends": ["plugin:internal/recommended"]
+  "extends": ["plugin:go-internal/recommended"]
 }
 ```
 

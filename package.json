@@ -1,23 +1,45 @@
 {
-  "name": "eslint-plugin-internal",
+  "name": "eslint-plugin-go-internal",
   "version": "1.0.0",
   "description": "ESLint plugin that enforces Go-style internal/ import boundaries",
   "main": "index.js",
   "scripts": {
     "test": "mocha tests/**/*.test.js",
-    "test:watch": "mocha tests/**/*.test.js --watch"
+    "test:watch": "mocha tests/**/*.test.js --watch",
+    "prerelease": "npm test",
+    "release": "npm publish --access public"
   },
+  "files": [
+    "index.js",
+    "rules/",
+    "README.md",
+    "LICENSE"
+  ],
   "keywords": [
     "eslint",
     "eslint-plugin",
+    "eslintplugin",
     "internal",
     "imports",
     "boundaries",
     "modules",
-    "go-style"
+    "go-style",
+    "golang",
+    "architecture",
+    "encapsulation",
+    "module-boundaries",
+    "code-organization"
   ],
-  "author": "Your Name",
-  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Rayyan98/eslint-plugin-go-internal"
+  },
+  "bugs": {
+    "url": "https://github.com/Rayyan98/eslint-plugin-go-internal/issues"
+  },
+  "homepage": "https://github.com/Rayyan98/eslint-plugin-go-internal#readme",
+  "author": "rayyan98",
+  "license": "ISC",
   "peerDependencies": {
     "eslint": ">=7.0.0"
   },
@@ -27,9 +49,5 @@
   },
   "engines": {
     "node": ">=12.0.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/your-username/eslint-plugin-internal.git"
   }
 }

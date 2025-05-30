@@ -6,9 +6,9 @@ module.exports = {
   },
   configs: {
     recommended: {
-      plugins: ['internal'],
+      plugins: ['go-internal'],
       rules: {
-        'internal/no-cross-internal-imports': 'error',
+        'go-internal/no-cross-internal-imports': 'error',
       },
     },
   },
