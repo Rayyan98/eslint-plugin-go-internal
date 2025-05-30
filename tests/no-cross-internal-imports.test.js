@@ -90,6 +90,18 @@ ruleTester.run('no-cross-internal-imports', rule, {
       "import { validator } from './validation/rules/user-rules';",
       'mymodule/internal/services/user-service.js'
     ),
+    
+    // Valid: submodule accessing parent module's internal (Go semantics)
+    createTestCase(
+      "import { shared } from '../../internal/shared';",
+      'project/modules/auth/src/login.js'
+    ),
+    
+    // Valid: nested submodule accessing parent module's internal (Go semantics)
+    createTestCase(
+      "import { shared } from '../../../internal/shared';",
+      'mymodule/submodule/internal/handlers/auth.js'
+    ),
   ],
 
   invalid: [
@@ -142,13 +154,6 @@ ruleTester.run('no-cross-internal-imports', rule, {
       [{ messageId: 'crossInternalImport' }]
     ),
     
-    // Invalid: importing from parent module's internal
-    createTestCase(
-      "import { shared } from '../../internal/shared';",
-      'project/modules/auth/src/login.js',
-      [{ messageId: 'crossInternalImport' }]
-    ),
-    
     // Complex case: multiple internal folders in path
     createTestCase(
       "import { util } from '../other/internal/helpers/internal/util';",
@@ -160,13 +165,6 @@ ruleTester.run('no-cross-internal-imports', rule, {
     createTestCase(
       "import { service } from '../auth/internal/service';",
       'apps/reporting-bridge/src/modules/payment/internal/handlers/payment.js',
-      [{ messageId: 'crossInternalImport' }]
-    ),
-    
-    // Invalid: importing from parent module's internal when in different internal
-    createTestCase(
-      "import { shared } from '../../../internal/shared';",
-      'mymodule/submodule/internal/handlers/auth.js',
       [{ messageId: 'crossInternalImport' }]
     ),
     
