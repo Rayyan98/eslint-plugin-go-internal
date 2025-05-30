@@ -1,59 +1,5 @@
 const path = require('path');
 
-/**
- * Resolves a relative import path to an absolute path
- * @param {string} importPath - The import path (relative)
- * @param {string} currentFilePath - The path of the file doing the import
- * @returns {string} - The resolved absolute path
- */
-function resolveImportPath(importPath, currentFilePath) {
-  const currentDir = path.dirname(currentFilePath);
-  return path.resolve(currentDir, importPath);
-}
-
-/**
- * Simplified logic to check if an import is allowed based on Go-style internal boundaries
- * @param {string} importerPath - The path of the importing file
- * @param {string} importeePath - The path of the imported file
- * @returns {boolean} - True if the import is allowed, false otherwise
- */
-function isImportAllowed(importerPath, importeePath) {
-  // 1. Take the importee's full path
-  const normalizedImporteePath = path.resolve(importeePath);
-  
-  // 2. Find the last 'internal' in the path
-  const parts = normalizedImporteePath.split(path.sep);
-  let lastInternalIndex = -1;
-  
-  for (let i = parts.length - 1; i >= 0; i--) {
-    if (parts[i] === 'internal') {
-      lastInternalIndex = i;
-      break;
-    }
-  }
-  
-  // 3. If no 'internal' found, skip (allow the import)
-  if (lastInternalIndex === -1) {
-    return true;
-  }
-  
-  // 4. If 'internal' found, take the path UP TO (not including) the 'internal' directory
-  // This is the module root according to Go's semantics
-  const moduleRootPath = parts.slice(0, lastInternalIndex).join(path.sep);
-  
-  // 5. Check if the importer's full path starts with that module root path
-  const normalizedImporterPath = path.resolve(importerPath);
-  
-  // 6. If the importer is within the tree rooted at the module root, allow
-  if (normalizedImporterPath.startsWith(moduleRootPath + path.sep) ||
-      normalizedImporterPath === moduleRootPath) {
-    return true;
-  }
-  
-  // 7. Otherwise, block the import
-  return false;
-}
-
 module.exports = {
   meta: {
     type: 'problem',
@@ -75,22 +21,41 @@ module.exports = {
         return;
       }
       
-      // Resolve the import path to an absolute path
-      const resolvedImportPath = resolveImportPath(importPath, currentFilePath);
+      // 1. Take the importee's full path
+      const importeePath = path.resolve(path.dirname(currentFilePath), importPath);
       
-      // Check if the import path contains 'internal'
-      if (!resolvedImportPath.includes(path.sep + 'internal' + path.sep) &&
-          !resolvedImportPath.endsWith(path.sep + 'internal')) {
+      // 2. Find the last 'internal' in the path
+      const parts = importeePath.split(path.sep);
+      let lastInternalIndex = -1;
+      
+      for (let i = parts.length - 1; i >= 0; i--) {
+        if (parts[i] === 'internal') {
+          lastInternalIndex = i;
+          break;
+        }
+      }
+      
+      // 3. If there is none, then skip (allow the import)
+      if (lastInternalIndex === -1) {
         return;
       }
       
-      // Use simplified logic to check if import is allowed
-      if (!isImportAllowed(currentFilePath, resolvedImportPath)) {
-        context.report({
-          node,
-          messageId: 'crossInternalImport',
-        });
+      // 4. Otherwise, take the full path up until the last 'internal' (excluding 'internal' itself)
+      const moduleRootPath = parts.slice(0, lastInternalIndex).join(path.sep);
+      
+      // 5. Check if the importer's full path starts with that path or not
+      const importerPath = path.resolve(currentFilePath);
+      
+      // 6. If yes, allow; if no, block
+      if (importerPath.startsWith(moduleRootPath + path.sep)) {
+        return; // Allow
       }
+      
+      // Block the import
+      context.report({
+        node,
+        messageId: 'crossInternalImport',
+      });
     }
 
     return {
